@@ -217,7 +217,7 @@
         <canvas id="gameCanvas" width="360" height="610"></canvas>
 
         <div id="startMenu" class="modal" style="display: flex;"> <div class="modal-content">
-                <h2>⚽ FOOTBALL90 ⚽</h2>
+                <h2>⚽ SOCCER ⚽</h2>
                 <div class="vs-text">Player vs Computer</div>
                 <p>Gunakan mouse atau sentuhan untuk menggerakkan paddle dan cetak gol sebanyak-banyaknya dalam 90 detik!</p>
                 <div class="button-container">
@@ -232,7 +232,7 @@
                 <div id="finalResult"></div>
                 <div class="button-container">
                     <button onclick="restartGame()">🔄 Play Again</button>
-                    <button class="btn-tertiary" onclick="showLeaderboard()">🏆 Standings</button>
+                    <button class="btn-tertiary" onclick="showLeaderboard()">🏆 Story</button>
                     <button class="btn-secondary" onclick="exitGame()">🚪 Exit</button>
                 </div>
             </div>
@@ -240,12 +240,12 @@
 
         <div id="leaderboard" class="modal">
             <div class="modal-content">
-                <h2>🏆 STANDINGS 🏆</h2>
+                <h2>🏆 STORY 🏆</h2>
                 <div id="leaderboardContent" style="max-height: 200px; overflow-y: auto;">
                     <p>Belum ada data permainan</p>
                 </div>
                 <div class="button-container">
-                    <button onclick="hideLeaderboard()">🔙 Kembali</button>
+                    <button onclick="hideLeaderboard()">🔙 BACK</button>
                 </div>
             </div>
         </div>
@@ -283,7 +283,7 @@
             dx: 0, // Will be set on reset
             dy: 0, // Will be set on reset
             speed: 7,
-            normalSpeed: 5,
+            normalSpeed: 6.3,
         };
 
         const paddle = {
@@ -296,7 +296,7 @@
         const goal = { // Opponent's goal
             x: (canvas.width - 100) / 2, // Centered
             y: 0,
-            width: 70,
+            width: 80,
             height: 25 // Depth of the goal net area
         };
 
