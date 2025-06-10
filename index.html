@@ -283,7 +283,7 @@
             dx: 0, // Will be set on reset
             dy: 0, // Will be set on reset
             speed: 7,
-            normalSpeed: 6.1,
+            normalSpeed: 6.2,
         };
 
         const paddle = {
@@ -944,11 +944,11 @@
             const finalResultDiv = document.getElementById('finalResult');
             let resultHTML = '';
             if (playerScore > computerScore) {
-                resultHTML = `<h2>🎉 SELAMAT! 🎉</h2><div class="vs-text">KAMU MENANG!</div>`;
+                resultHTML = `<h2>🎉 CONGRAT! 🎉</h2><div class="vs-text">YOU WIN!</div>`;
             } else if (computerScore > playerScore) {
-                resultHTML = `<h2>😞 SAYANG SEKALI! 😞</h2><div class="vs-text">KAMU KALAH!</div>`;
+                resultHTML = `<h2>😞 TOO BAD! 😞</h2><div class="vs-text">YOU LOSE!</div>`;
             } else {
-                resultHTML = `<h2>🤝 HASIL SERI! 🤝</h2><div class="vs-text">PERTANDINGAN IMBANG!</div>`;
+                resultHTML = `<h2>🤝 RESULTS! 🤝</h2><div class="vs-text">DRAW MATCH!</div>`;
             }
             resultHTML += `<div class="score-display">${playerScore} - ${computerScore}</div>`;
             finalResultDiv.innerHTML = resultHTML;
