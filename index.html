@@ -286,6 +286,11 @@
             normalSpeed: 6.2,
         };
 
+        // Ball trail properties
+        const ballTrail = [];
+        const maxTrailLength = 15; // Number of previous positions to store
+        const trailDecay = 0.05; // How much opacity decreases per particle
+
         const paddle = {
             x: (canvas.width - ORIGINAL_PADDLE_WIDTH) / 2, // Centered initially
             y: canvas.height - 15 - 15, // Positioned near bottom with some margin
@@ -601,6 +606,18 @@
         }
 
         function drawBall() {
+            // Draw ball trail if ball has significant horizontal movement (spin)
+            if (Math.abs(ball.dx) > 0.5) { // Only show trail if there's significant spin
+                for (let i = 0; i < ballTrail.length; i++) {
+                    const trail = ballTrail[i];
+                    const opacity = (i / maxTrailLength) * (1 - trailDecay) + trailDecay; // Fades out
+                    ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`; // White trail, fading
+                    ctx.beginPath();
+                    ctx.arc(trail.x, trail.y, ball.radius * (i / maxTrailLength * 0.5 + 0.5), 0, Math.PI * 2); // Smaller for older particles
+                    ctx.fill();
+                }
+            }
+
             ctx.fillStyle = 'white'; // White ball
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
@@ -633,6 +650,12 @@
         function updateBall() {
             ball.x += ball.dx;
             ball.y += ball.dy;
+
+            // Add current ball position to trail
+            ballTrail.push({ x: ball.x, y: ball.y });
+            if (ballTrail.length > maxTrailLength) {
+                ballTrail.shift(); // Remove oldest position
+            }
 
             // Player scores a goal (ball enters top goal)
             if (ball.dy < 0 && // Moving upwards
@@ -692,10 +715,10 @@
 
                 // Ensure it's not colliding with the goal posts or the wider goal area (goal.x - 40 to goal.x + goal.width + 40)
                 // This condition checks if the ball is *outside* the main goal structure horizontally
-                if (ball.x + ball.radius < goal.x - 40) { // Ball is to the left of the wider goal area
+                if (ball.x + ball.radius < goal.x - 55) { // Ball is to the left of the wider goal area
                     ball.dx = -ball.dx; // Reverse horizontal direction
                     ball.speed = Math.min(ball.speed * goalSideBoostFactor, maxGameSpeed); // Increase speed
-                    ball.dy += (Math.random() - 0.5) * 0.9; // Add some vertical spin
+                    ball.dy += (Math.random() - 0.5) * 0.7; // Add some vertical spin
                     normalizeBallSpeed();
                     ball.x = sensitiveZoneWidth + ball.radius + 0.1; // Nudge out
                 }
@@ -709,10 +732,10 @@
                 ball.y + ball.radius > goal.y) { // Ball is above the goal line
 
                 // Ensure it's not colliding with the goal posts or the wider goal area
-                if (ball.x - ball.radius > goal.x + goal.width + 40) { // Ball is to the right of the wider goal area
+                if (ball.x - ball.radius > goal.x + goal.width + 55) { // Ball is to the right of the wider goal area
                     ball.dx = -ball.dx; // Reverse horizontal direction
                     ball.speed = Math.min(ball.speed * goalSideBoostFactor, maxGameSpeed); // Increase speed
-                    ball.dy += (Math.random() - 0.5) * 0.9; // Add some vertical spin
+                    ball.dy += (Math.random() - 0.5) * 0.7; // Add some vertical spin
                     normalizeBallSpeed();
                     ball.x = canvas.width - sensitiveZoneWidth - ball.radius - 0.1; // Nudge out
                 }
@@ -894,6 +917,9 @@
             ball.dx = (Math.random() > 0.5 ? 1 : -1) * (ball.speed * 0.7); // Adjust 0.7 for horizontal spread
 
             normalizeBallSpeed(); // Ensure consistent speed with new dx/dy
+
+            // Clear the ball trail on reset
+            ballTrail.length = 0;
         }
 
         function updateHUD() {
@@ -927,7 +953,7 @@
                 date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
                 playerScore: playerScore,
                 computerScore: computerScore,
-                result: playerScore > computerScore ? 'Menang' : (computerScore > playerScore ? 'Kalah' : 'Seri')
+                result: playerScore > computerScore ? 'Win' : (computerScore > playerScore ? 'Lose' : 'Draw')
             };
 
             gameHistory.unshift(gameResult); // Add to beginning
@@ -974,13 +1000,13 @@
             } else {
                 let html = '<div style="text-align: left;">';
                 gameHistory.forEach((game) => {
-                    const resultColor = game.result === 'Menang' ? '#4CAF50' :
-                                       (game.result === 'Kalah' ? '#FF6B6B' : '#FFA726');
+                    const resultColor = game.result === 'Win' ? '#4CAF50' :
+                                       (game.result === 'Lose' ? '#FF6B6B' : '#FFA726');
                     html += `
                         <div style="margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid ${resultColor};">
                             <strong>${game.date}</strong><br>
                             Skor: ${game.playerScore} (Anda) - ${game.computerScore} (CPU)<br>
-                            <span style="color: ${resultColor}; font-weight: bold;">Hasil: ${game.result}</span>
+                            <span style="color: ${resultColor}; font-weight: bold;">Result: ${game.result}</span>
                         </div>
                     `;
                 });
