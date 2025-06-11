@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klasemen Liga</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2e7d32;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 360px;
+            height: 640px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            margin: auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 15px 0;
+            background-color: #388E3C;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        header .subtitle {
+            font-size: 0.8em;
+            font-weight: normal;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .table-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 8px 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #388E3C;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Column specific widths for better alignment */
+        th:nth-child(1), td:nth-child(1) { width: 10%; } /* NO */
+        th:nth-child(2), td:nth-child(2) { width: 40%; text-align: left; padding-left: 15px; } /* PLAYERS */
+        th:nth-child(3), td:nth-child(3) { width: 15%; } /* PLAY */
+        th:nth-child(4), td:nth-child(4) { width: 15%; } /* GOL */
+        th:nth-child(5), td:nth-child(5) { width: 20%; } /* POIN */
+
+        .back-button-container {
+            padding: 10px;
+            text-align: center;
+            background-color: #388E3C;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .back-button {
+            background: linear-gradient(45deg, #FF9800, #FFA726); /* Orange */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            background: linear-gradient(45deg, #FFA726, #FF9800);
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            GLOBAL STANDING
+            <span class="subtitle">TOTAL PLAYERS RESULT</span>
+        </header>
+        <div class="table-container">
+            <table id="leaderboardTable">
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>PLAYERS</th>
+                        <th>PLAY</th>
+                        <th>GOL</th>
+                        <th>POIN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+            <p id="noDataMessage" style="text-align: center; margin-top: 20px; display: none;">Belum ada data permainan global.</p>
+        </div>
+        <div class="back-button-container">
+            <button class="back-button" onclick="goBackToLogin()">🔙 BACK TO LOGIN</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', displayGlobalLeaderboard);
+
+        function displayGlobalLeaderboard() {
+            const tbody = document.getElementById('leaderboardTable').getElementsByTagName('tbody')[0];
+            const noDataMessage = document.getElementById('noDataMessage');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            let globalGameHistory = [];
+            try {
+                const savedGlobalHistory = localStorage.getItem('soccerBounceGlobalHistory');
+                if (savedGlobalHistory) {
+                    globalGameHistory = JSON.parse(savedGlobalHistory);
+                }
+            } catch (e) {
+                console.warn('LocalStorage not available or global history corrupted.');
+                globalGameHistory = [];
+            }
+
+            if (globalGameHistory.length === 0) {
+                noDataMessage.style.display = 'block';
+                return;
+            } else {
+                noDataMessage.style.display = 'none';
+            }
+
+            // Aggregate data by player
+            const playerStats = {}; // { playerName: { totalPlays, totalGoals, totalPoints } }
+
+            globalGameHistory.forEach(game => {
+                const name = game.playerName;
+                if (!playerStats[name]) {
+                    playerStats[name] = {
+                        totalPlays: 0,
+                        totalGoals: 0,
+                        totalPoints: 0 // 3 points for win, 1 for draw, 0 for lose
+                    };
+                }
+                playerStats[name].totalPlays++;
+                playerStats[name].totalGoals += game.playerScore; // Sum of player's goals
+
+                if (game.result === 'Win') {
+                    playerStats[name].totalPoints += 3;
+                } else if (game.result === 'Draw') {
+                    playerStats[name].totalPoints += 1;
+                }
+            });
+
+            // Convert to an array for sorting
+            const sortedPlayers = Object.keys(playerStats).map(name => ({
+                playerName: name,
+                totalPlays: playerStats[name].totalPlays,
+                totalGoals: playerStats[name].totalGoals,
+                totalPoints: playerStats[name].totalPoints
+            }));
+
+            // Sort by totalPoints (descending), then totalGoals (descending), then totalPlays (ascending)
+            sortedPlayers.sort((a, b) => {
+                if (b.totalPoints !== a.totalPoints) {
+                    return b.totalPoints - a.totalPoints;
+                }
+                if (b.totalGoals !== a.totalGoals) {
+                    return b.totalGoals - a.totalGoals;
+                }
+                return a.totalPlays - b.totalPlays; // Fewer plays for same points/goals is better
+            });
+
+            // Populate the table
+            sortedPlayers.forEach((player, index) => {
+                const row = tbody.insertRow();
+                const cellNo = row.insertCell();
+                const cellPlayers = row.insertCell();
+                const cellPlay = row.insertCell();
+                const cellGoal = row.insertCell();
+                const cellPoin = row.insertCell();
+
+                cellNo.textContent = index + 1;
+                cellPlayers.textContent = `@${player.playerName}`; // Display with @
+                cellPlay.textContent = player.totalPlays;
+                cellGoal.textContent = player.totalGoals;
+                cellPoin.textContent = player.totalPoints;
+
+                // Highlight current player if their name exists in localStorage
+                const currentPlayer = localStorage.getItem('currentPlayerName');
+                if (currentPlayer && player.playerName === currentPlayer) {
+                    row.style.fontWeight = 'bold';
+                    row.style.color = '#FFD700'; // Gold color for current player
+                }
+            });
+        }
+
+        function goBackToLogin() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
