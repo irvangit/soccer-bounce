@@ -1,1125 +1,144 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soccer Bounce Game</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <title>Login - Soccer Bounce</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #2e7d32; /* Darker green background sesuai gaya sebelumnya */
+            color: #ffffff;
             margin: 0;
-            padding: 10px; /* Reduced padding for smaller screens */
-            background: linear-gradient(135deg, #2c5234, #1a3d20);
+            padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            font-family: 'Arial', sans-serif;
-            color: white;
             min-height: 100vh;
             box-sizing: border-box;
         }
 
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            max-width: 400px; /* Max width for larger screens, allows centering */
-            margin: 0 auto; /* Center the game container */
+        .container {
+            width: 360px;
+            height: 640px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
-            align-items: center;
-        }
-
-        #hud {
-            width: 100%; /* Full width of its container */
-            max-width: 360px; /* Consistent with canvas logical width */
-            height: 50px;
-            background: linear-gradient(45deg, #1a3d20, #2c5234);
-            border: 2px solid white;
-            border-radius: 7px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 15px; /* Adjusted padding */
-            margin-bottom: 10px;
-            font-size: clamp(14px, 4vw, 18px); /* Responsive font size */
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            box-sizing: border-box;
-        }
-
-        #gameCanvas {
-            border: 3px solid white;
-            border-radius: 10px;
-            cursor: none;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-            display: block; /* Removes extra space below canvas */
-            width: 100%; /* Make canvas responsive */
-            height: auto; /* Maintain aspect ratio */
-            aspect-ratio: 360 / 610; /* Game's logical aspect ratio */
-            max-height: 85vh; /* Prevent canvas from being too tall on portrait */
-            background-color: #4CAF50; /* Fallback for canvas content */
-        }
-
-        .modal {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            padding: 10px; /* Padding for modal itself on small screens */
-            box-sizing: border-box;
-        }
-
-        .modal-content {
-            background: linear-gradient(145deg, #2c5234, #1a3d20);
-            padding: clamp(20px, 5vw, 40px); /* Responsive padding */
-            border-radius: 20px;
+            margin: auto;
             text-align: center;
-            border: 3px solid #4CAF50;
-            box-shadow: 0 0 30px rgba(76, 175, 80, 0.5);
-            max-width: 350px; /* Max width for content */
-            width: 90%; /* Relative width */
+            padding: 20px;
             box-sizing: border-box;
         }
 
-        .modal h1 {
-            color: #4CAF50;
-            font-size: clamp(24px, 6vw, 32px);
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .modal h2 {
-            color: #FFD700;
-            font-size: clamp(20px, 5.5vw, 28px);
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .modal p {
-            font-size: clamp(14px, 3.5vw, 16px);
-        }
-
-        .vs-text {
-            font-size: clamp(18px, 4.5vw, 24px);
-            color: #FF6B6B;
+        .welcome-text {
+            font-size: 1.8em;
             font-weight: bold;
-            margin: 15px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 5px;
+            color: #ffffff;
         }
 
-        .score-display {
-            font-size: clamp(28px, 7vw, 36px);
-            color: #4CAF50;
-            margin: 15px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        .app-name {
+            font-size: 1.5em;
+            font-weight: normal;
+            margin-bottom: 40px;
+            color: #ffffff;
         }
 
-        .button-container {
+        .login-with-text {
+            font-size: 1em;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        .button-group {
+            width: 100%;
+            max-width: 280px;
             display: flex;
             flex-direction: column;
-            gap: 10px; /* Reduced gap */
-            margin-top: 20px;
+            gap: 15px;
         }
 
-        button {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            color: white;
+        .login-button {
+            padding: 15px 20px;
             border: none;
-            padding: 12px 25px; /* Adjusted padding */
-            font-size: clamp(14px, 4vw, 16px);
-            border-radius: 25px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #ffffff;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            font-weight: bold;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-            background: linear-gradient(45deg, #45a049, #4CAF50);
+        .login-button:hover {
+            opacity: 0.9;
         }
 
-        .btn-secondary {
-            background: linear-gradient(45deg, #FF6B6B, #FF5252);
-        }
+        .play-guest { background-color: #0088CC; } /* Biru */
+        .view-leaderboard { background-color: #FF9800; } /* Oranye */
 
-        .btn-secondary:hover {
-            background: linear-gradient(45deg, #FF5252, #FF6B6B);
-        }
-
-        .btn-tertiary {
-            background: linear-gradient(45deg, #FFA726, #FF9800);
-        }
-
-        .btn-tertiary:hover {
-            background: linear-gradient(45deg, #FF9800, #FFA726);
-        }
-
-        #startMenu, #gameOver, #leaderboard {
-            display: none; /* Initially hidden, controlled by JS */
-        }
-
-        .firework {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            animation: firework-explode 1s ease-out forwards; /* Use forwards */
-            pointer-events: none;
-            z-index: 1002;
-        }
-
-        @keyframes firework-explode {
-            0% {
-                transform: translate(0, 0) scale(0);
-                opacity: 1;
+        @media (max-width: 360px) {
+            .container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
             }
-            100% {
-                transform: translate(var(--dx), var(--dy)) scale(20);
-                opacity: 0;
-            }
-        }
-
-        .confetti {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: white; /* Default, overridden by JS */
-            border-radius: 50%; /* Make it circular */
-            opacity: 0;
-            transform: scale(0);
-            animation: confetti-fall var(--duration) ease-out forwards;
-            pointer-events: none;
-            z-index: 1001;
-        }
-
-        @keyframes confetti-fall {
-            0% {
-                transform: translate(0, 0) scale(0);
-                opacity: 1;
-            }
-            20% {
-                transform: translate(var(--dx), var(--dy)) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--dx), calc(100vh - var(--dy) - 50%)) scale(0.5); /* Fall towards bottom */
-                opacity: 0;
-            }
-        }
-
-        .goal-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: clamp(36px, 10vw, 48px); /* Responsive font size */
-            color: #FFD700;
-            font-weight: bold;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
-            animation: goal-popup 2s ease-out forwards;
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        @keyframes goal-popup {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="hud">
-            <div>Player: <span id="playerScore">0</span></div>
-            <div>Time: <span id="timeDisplay">90</span>s</div>
-            <div>Computer: <span id="computerScore">0</span></div>
+    <div class="container">
+        <div class="welcome-text">WELCOME</div>
+        <div class="app-name">SOCCER BOUNCE</div>
+        <div class="login-with-text">ENTER YOUR NAME</div>
+        <div class="input-group">
+            <input type="text" id="playerNameInput" placeholder="Your Player Name" maxlength="20">
         </div>
-        <canvas id="gameCanvas" width="360" height="610"></canvas>
-
-        <div id="startMenu" class="modal" style="display: flex;"> <div class="modal-content">
-                <h2>⚽ SOCCER ⚽</h2>
-                <div class="vs-text">Player vs Computer</div>
-                <p>Gunakan mouse atau sentuhan untuk menggerakkan paddle dan cetak gol sebanyak-banyaknya dalam 90 detik!</p>
-                <div class="button-container">
-                    <button onclick="startGame()">🎮 Start Game</button>
-                    <button class="btn-tertiary" onclick="showLeaderboard()">🏆 Story</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="gameOver" class="modal">
-            <div class="modal-content">
-                <div id="finalResult"></div>
-                <div class="button-container">
-                    <button onclick="restartGame()">🔄 Play Again</button>
-                    <button class="btn-tertiary" onclick="showLeaderboard()">🏆 Story</button>
-                    <button class="btn-secondary" onclick="exitGame()">🚪 Exit</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="leaderboard" class="modal">
-            <div class="modal-content">
-                <h2>🏆 STORY 🏆</h2>
-                <div id="leaderboardContent" style="max-height: 200px; overflow-y: auto;">
-                    <p>Belum ada data permainan</p>
-                </div>
-                <div class="button-container">
-                    <button onclick="hideLeaderboard()">🔙 BACK</button>
-                </div>
-            </div>
+        <div class="button-group">
+            <button class="login-button play-guest" onclick="loginAndPlay()">PLAY GAME</button>
+            <button class="login-button view-leaderboard" onclick="viewGlobalLeaderboard()">VIEW GLOBAL LEADERBOARD</button>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // Game state
-        let gameRunning = false;
-        let gameTime = 90; // seconds
-        let playerScore = 0;
-        let computerScore = 0;
-        let gameTimer;
-        let gameStarted = false; // Tracks if a game has been played in this session
-
-        // Variabel untuk tingkat kesulitan adaptif
-        let initialPaddleWidth;
-        const minPaddleWidthRatio = 0.4; // Paddle will shrink to 40% of its initial width
-        let paddleShrinkRate; // Paddle shrink rate per second
-
-        let initialBallSpeed;
-        const maxBallSpeedIncreaseRatio = 0.7; // Ball speed will increase up to 70% of normal speed
-        let ballSpeedIncreaseRate; // Ball speed increase rate per second
-
-        const maxGameSpeed = 20; // Maximum allowed ball speed
-        const ORIGINAL_PADDLE_WIDTH = 90; // Original paddle width that doesn't change
-
-        // Game objects
-        const ball = {
-            x: canvas.width / 2, // Initial position based on canvas attribute width
-            y: canvas.height / 2, // Initial position based on canvas attribute height
-            radius: 8,
-            dx: 0, // Will be set on reset
-            dy: 0, // Will be set on reset
-            speed: 7,
-            normalSpeed: 6.2,
-        };
-
-        // Ball trail properties
-        const ballTrail = [];
-        const maxTrailLength = 15; // Number of previous positions to store
-        const trailDecay = 0.05; // How much opacity decreases per particle
-
-        const paddle = {
-            x: (canvas.width - ORIGINAL_PADDLE_WIDTH) / 2, // Centered initially
-            y: canvas.height - 15 - 15, // Positioned near bottom with some margin
-            width: ORIGINAL_PADDLE_WIDTH,
-            height: 11
-        };
-
-        const goal = { // Opponent's goal
-            x: (canvas.width - 100) / 2, // Centered
-            y: 0,
-            width: 72,
-            height: 20 // Depth of the goal net area
-        };
-
-        // Obstacles with properties for random movement
-        const obstacles = [
-            { x: 180, y: 40, radius: 12, initialX: 180, initialY: 40, moveRange: 33, speed: 3, targetX: null, targetY: null, isSpecial: true }, // This obstacle is now special
-            { x: 80, y: 120, radius: 12, initialX: 80, initialY: 120, moveRange: 70, speed: 1.5, targetX: null, targetY: null},
-            { x: 280, y: 180, radius: 12, initialX: 280, initialY: 180, moveRange: 80, speed: 2, targetX: null, targetY: null },
-            { x: 150, y: 240, radius: 12, initialX: 150, initialY: 240, moveRange: 70, speed: 1.8, targetX: null, targetY: null },
-            { x: 150, y: 300, radius: 12, initialX: 150, initialY: 300, moveRange: 80, speed: 2.3, targetX: null, targetY: null },
-            { x: 150, y: 450, radius: 12, initialX: 150, initialY: 500, moveRange: 75, speed: 2.7, targetX: null, targetY: null, isSpecial: true }
-            //{ x: 180, y: 40, radius: 12.5, initialX: 180, initialY: 40, moveRange: 30.5, speed: 1.7, targetX: null, targetY: null }
-        ];
-
-        let gameHistory = [];
-
-        // Load game history safely
-        try {
-            const savedHistory = window.localStorage?.getItem('soccerBounceHistory');
-            if (savedHistory) {
-                gameHistory = JSON.parse(savedHistory);
-            }
-        } catch (e) {
-            console.warn('LocalStorage not available or history corrupted, using memory storage.');
-            gameHistory = []; // Initialize to empty array if parsing fails
-        }
-
-        // Initialize Tone.js for sound effects
-        // Kick sound: a short, percussive synth sound
-        const kickSynth = new Tone.MembraneSynth().toDestination();
-        // Cheer sound: a short burst of noise
-        const cheerNoise = new Tone.NoiseSynth({
-            noise: {
-                type: "white"
-            },
-            envelope: {
-                attack: 0.01,
-                decay: 0.2,
-                sustain: 0,
-                release: 0.1
-            }
-        }).toDestination();
-
-        // Sad sound: a low, melancholic synth
-        const sadSynth = new Tone.FMSynth({
-            harmonicity: 3.0,
-            modulationIndex: 10,
-            envelope: {
-                attack: 0.001,
-                decay: 0.2,
-                sustain: 0,
-                release: 0.5
-            },
-            modulation: {
-                type: "sine"
-            },
-            modulationEnvelope: {
-                attack: 0.001,
-                decay: 0.2,
-                sustain: 0,
-                release: 0.5
-            }
-        }).toDestination();
-
-
-        // Function to play kick sound
-        function playKickSound() {
-            kickSynth.triggerAttackRelease("C2", "8n"); // "C2" for pitch, "8n" for duration
-        }
-
-        // Function to play cheer sound
-        function playCheerSound() {
-            cheerNoise.triggerAttackRelease("0.5"); // Play noise for 0.5 seconds
-        }
-
-        // Function to play sad sound
-        function playSadSound() {
-            sadSynth.triggerAttackRelease("D3", "0.4"); // A low D note for 0.4 seconds
-        }
-
-        // Helper to normalize ball speed and direction
-        function normalizeBallSpeed() {
-            const currentDirSpeed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
-            if (currentDirSpeed > 0) {
-                ball.dx = (ball.dx / currentDirSpeed) * ball.speed;
-                ball.dy = (ball.dy / currentDirSpeed) * ball.speed;
-            } else if (ball.speed > 0) { // If currentDirSpeed is 0 but ball.speed is not
-                ball.dx = (Math.random() - 0.5) * 2 * ball.speed / Math.sqrt(2); // Random direction
-                ball.dy = (Math.random() > 0.5 ? 1 : -1) * Math.sqrt(ball.speed*ball.speed - ball.dx*ball.dx) || -ball.speed / Math.sqrt(2);
-            }
-        }
-
-        function showModal(modalId) {
-            ['startMenu', 'gameOver', 'leaderboard'].forEach(id => {
-                document.getElementById(id).style.display = 'none';
-            });
-            document.getElementById(modalId).style.display = 'flex';
-        }
-
-        window.onload = () => {
-            showModal('startMenu');
-            updateHUD(); // Initial HUD update
-            // Set initial ball position based on canvas attributes (logical size)
-            ball.x = canvas.width / 2;
-            ball.y = canvas.height / 2;
-            paddle.x = (canvas.width - paddle.width) / 2;
-            paddle.y = canvas.height - paddle.height - 15; // 15px margin from bottom
-            goal.x = (canvas.width - goal.width) / 2;
-        };
-
-        function startGame() {
-            // Start Tone.js audio context on user interaction
-            if (Tone.context.state !== 'running') {
-                Tone.start();
-            }
-
-            showModal('gameCanvas'); // Effectively hides all modals by not calling showModal
-            document.getElementById('startMenu').style.display = 'none';
-            document.getElementById('gameOver').style.display = 'none';
-            document.getElementById('leaderboard').style.display = 'none';
-
-            gameRunning = true;
-            gameStarted = true;
-            gameTime = 90;
-            playerScore = 0;
-            computerScore = 0;
-
-            // BUG FIX: Ensure paddle returns to normal size at the start of a new game
-            paddle.width = ORIGINAL_PADDLE_WIDTH;
-            paddle.x = (canvas.width - paddle.width) / 2; // Recenter paddle
-
-            // Initialization for adaptive difficulty
-            initialPaddleWidth = paddle.width; // Save initial paddle width
-            initialBallSpeed = ball.normalSpeed; // Save normal ball speed
-
-            // Calculate paddle shrink rate per second
-            // Desired total reduction: initialPaddleWidth * (1 - minPaddleWidthRatio)
-            // Divided by total game time (gameTime)
-            paddleShrinkRate = (initialPaddleWidth * (1 - minPaddleWidthRatio)) / gameTime;
-
-            // Calculate ball speed increase rate per second
-            // Desired total increase: initialBallSpeed * maxBallSpeedIncreaseRatio
-            // Divided by total game time (gameTime)
-            ballSpeedIncreaseRate = (initialBallSpeed * maxBallSpeedIncreaseRatio) / gameTime;
-
-            // Reset obstacle positions and targets for a new game
-            obstacles.forEach(obstacle => {
-                obstacle.x = obstacle.initialX;
-                obstacle.y = obstacle.initialY;
-                obstacle.targetX = null; // Reset target to force new target selection
-                obstacle.targetY = null;
-            });
-
-            resetBall(); // This will also call normalizeBallSpeed
-            updateHUD();
-
-            if (gameTimer) clearInterval(gameTimer); // Clear any existing timer
-            gameTimer = setInterval(() => {
-                gameTime--;
-                updateHUD();
-
-                // Call function to update difficulty every second
-                updateDifficulty();
-
-                if (gameTime <= 0) {
-                    clearInterval(gameTimer);
-                    endGame();
-                }
-            }, 1000);
-
-            gameLoop();
-        }
-
-        // New function to update difficulty (paddle and ball speed)
-        function updateDifficulty() {
-            if (!gameRunning) return;
-
-            // Slowly reduce player paddle width
-            // Ensure paddle width does not go below the minimum limit
-            paddle.width = Math.max(initialPaddleWidth * minPaddleWidthRatio, paddle.width - paddleShrinkRate);
-
-            // Slowly increase ball speed
-            // Ensure ball speed does not exceed the maximum limit
-            ball.speed = Math.min(initialBallSpeed * (1 + maxBallSpeedIncreaseRatio), ball.speed + ballSpeedIncreaseRate);
-
-            // Important: Adjust ball's dx and dy components to match the new speed
-            normalizeBallSpeed();
-        }
-
-        function createConfetti(x, y) {
-            const colors = ['#FFD700', '#FF6B6B', '#4CAF50', '#2196F3', '#FF9800', '#9C27B0'];
-            const gameContainer = document.getElementById('gameContainer');
-            const canvasRect = canvas.getBoundingClientRect(); // Get current scaled canvas rect
-
-            for (let i = 0; i < 50; i++) { // Increased confetti count
-                const confettiEl = document.createElement('div');
-                confettiEl.className = 'confetti';
-
-                // Convert game coordinates (x,y) to screen coordinates relative to gameContainer
-                const scaleX = canvasRect.width / canvas.width;
-                const scaleY = canvasRect.height / canvas.height;
-
-                const screenX = x * scaleX + canvasRect.left - gameContainer.getBoundingClientRect().left;
-                const screenY = y * scaleY + canvasRect.top - gameContainer.getBoundingClientRect().top;
-
-                confettiEl.style.left = screenX + 'px';
-                confettiEl.style.top = screenY + 'px';
-                confettiEl.style.background = colors[Math.floor(Math.random() * colors.length)];
-                confettiEl.style.animationDelay = Math.random() * 0.5 + 's';
-                confettiEl.style.transform = `rotate(${Math.random() * 360}deg)`; // Initial random rotation
-
-                // Apply random movement for confetti
-                const angle = Math.random() * Math.PI * 2;
-                const velocity = 10 + Math.random() * 15; // Random velocity for spread
-                const duration = 2 + Math.random() * 1; // Random duration for falling
-                confettiEl.style.setProperty('--dx', Math.cos(angle) * velocity + 'px');
-                confettiEl.style.setProperty('--dy', Math.sin(angle) * velocity + 'px');
-                confettiEl.style.setProperty('--duration', duration + 's');
-
-
-                gameContainer.appendChild(confettiEl);
-
-                setTimeout(() => {
-                    if (confettiEl.parentNode) {
-                        confettiEl.remove();
-                    }
-                }, duration * 1000); // Remove after animation
-            }
-        }
-
-        function createFireworks(x, y) {
-            const colors = ['#FFD700', '#FF4444', '#44FF44', '#4444FF', '#FF44FF'];
-            const gameContainer = document.getElementById('gameContainer');
-            const canvasRect = canvas.getBoundingClientRect();
-
-            for (let i = 0; i < 15; i++) { // Increased firework particles
-                const fireworkEl = document.createElement('div');
-                fireworkEl.className = 'firework';
-
-                const scaleX = canvasRect.width / canvas.width;
-                const scaleY = canvasRect.height / canvas.height;
-                const screenX = x * scaleX + canvasRect.left - gameContainer.getBoundingClientRect().left;
-                const screenY = y * scaleY + canvasRect.top - gameContainer.getBoundingClientRect().top;
-
-                fireworkEl.style.left = screenX + 'px';
-                fireworkEl.style.top = screenY + 'px';
-                fireworkEl.style.background = colors[Math.floor(Math.random() * colors.length)];
-
-                // Firework particles spread out
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 30 + Math.random() * 40; // Spread distance
-                fireworkEl.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
-                fireworkEl.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
-
-                gameContainer.appendChild(fireworkEl);
-
-                setTimeout(() => {
-                    if (fireworkEl.parentNode) {
-                        fireworkEl.remove();
-                    }
-                }, 1000); // Animation duration is 1s
-            }
-        }
-
-        function showGoalMessage() {
-            const message = document.createElement('div');
-            message.className = 'goal-message';
-            message.textContent = 'GOOOAL!';
-            document.getElementById('gameContainer').appendChild(message);
-
-            setTimeout(() => {
-                if(message.parentNode) message.remove();
-            }, 2000);
-        }
-
-        function drawField() {
-            ctx.fillStyle = '#4CAF50'; // Field color
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)'; // Lighter lines
-            ctx.lineWidth = 2;
-
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height / 2);
-            ctx.lineTo(canvas.width, canvas.height / 2);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI * 2);
-            ctx.stroke();
-
-            // Goal areas (visual only, not for collision)
-            ctx.beginPath();
-            ctx.rect(goal.x - 40, goal.y, goal.width + 80, 90); // Top goal area
-            ctx.stroke();
-
-        }
-
-        function drawGoal() { // Opponent's goal
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 4; // Thicker posts
-
-            // Posts
-            ctx.beginPath();
-            ctx.moveTo(goal.x, goal.y);
-            ctx.lineTo(goal.x, goal.y + goal.height);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(goal.x + goal.width, goal.y);
-            ctx.lineTo(goal.x + goal.width, goal.y + goal.height);
-            ctx.stroke();
-
-            // Top bar
-            ctx.beginPath();
-            ctx.moveTo(goal.x, goal.y);
-            ctx.lineTo(goal.x + goal.width, goal.y);
-            ctx.stroke();
-
-            // Net pattern
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.lineWidth = 1;
-            for (let i = 10; i < goal.width; i += 10) {
-                ctx.beginPath(); ctx.moveTo(goal.x + i, goal.y); ctx.lineTo(goal.x + i, goal.y + goal.height); ctx.stroke();
-            }
-            for (let i = 8; i < goal.height; i += 8) {
-                ctx.beginPath(); ctx.moveTo(goal.x, goal.y + i); ctx.lineTo(goal.x + goal.width, goal.y + i); ctx.stroke();
-            }
-        }
-
-        function drawPaddle() {
-            ctx.fillStyle = '#2196F3'; // Blue paddle
-            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 1; // Thinner border for paddle
-            ctx.strokeRect(paddle.x, paddle.y, paddle.width, paddle.height);
-        }
-
-        function drawBall() {
-            // Draw ball trail if ball has significant horizontal movement (spin)
-            if (Math.abs(ball.dx) > 0.5) { // Only show trail if there's significant spin
-                for (let i = 0; i < ballTrail.length; i++) {
-                    const trail = ballTrail[i];
-                    const opacity = (i / maxTrailLength) * (1 - trailDecay) + trailDecay; // Fades out
-                    ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`; // White trail, fading
-                    ctx.beginPath();
-                    ctx.arc(trail.x, trail.y, ball.radius * (i / maxTrailLength * 0.5 + 0.5), 0, Math.PI * 2); // Smaller for older particles
-                    ctx.fill();
-                }
-            }
-
-            ctx.fillStyle = 'white'; // White ball
-            ctx.beginPath();
-            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            ctx.fill();
-            // Simple shadow for ball
-            ctx.beginPath();
-            ctx.arc(ball.x + 1, ball.y + 1, ball.radius, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,0,0,0.2)';
-            ctx.fill();
-        }
-
-        function drawObstacles() {
-            obstacles.forEach(obstacle => {
-                // If it's the special obstacle, draw it with a different color
-                if (obstacle.isSpecial) {
-                    ctx.fillStyle = '#000000'; // Gold color for special obstacle
-                } else {
-                    ctx.fillStyle = '#333'; // Darker obstacles
-                }
-                ctx.beginPath();
-                ctx.arc(obstacle.x, obstacle.y, obstacle.radius, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-            });
-        }
-
-        function updateBall() {
-            ball.x += ball.dx;
-            ball.y += ball.dy;
-
-            // Add current ball position to trail
-            ballTrail.push({ x: ball.x, y: ball.y });
-            if (ballTrail.length > maxTrailLength) {
-                ballTrail.shift(); // Remove oldest position
-            }
-
-            // Player scores a goal (ball enters top goal)
-            if (ball.dy < 0 && // Moving upwards
-                ball.y - ball.radius < goal.y + goal.height && // Ball's top edge enters goal depth
-                ball.y + ball.radius > goal.y && // Ball is somewhat vertically aligned with goal opening
-                ball.x > goal.x && ball.x < goal.x + goal.width) { // Horizontally within goal posts
-
-                // More specific: if ball's top edge is near or past the actual goal line (y=0)
-                if (ball.y - ball.radius <= goal.y + 5) { // Small tolerance for scoring
-                    playerScore++;
-                    updateHUD();
-                    showGoalMessage();
-                    createConfetti(ball.x, ball.y);
-                    createFireworks(ball.x, ball.y);
-                    playCheerSound(); // Play cheer sound on goal
-                    resetBall();
-                    return; // Exit updateBall after scoring
-                }
-            }
-
-            // Wall collisions (left and right)
-            if (ball.x - ball.radius <= 0) {
-                ball.dx = -ball.dx;
-                ball.x = ball.radius; // Prevent sticking
-                // Add a small vertical spin component for wall bounce
-                ball.dy += (Math.random() - 0.5) * 0.5; // Small random vertical push
-                normalizeBallSpeed();
-            } else if (ball.x + ball.radius >= canvas.width) {
-                ball.dx = -ball.dx;
-                ball.x = canvas.width - ball.radius; // Prevent sticking
-                // Add a small vertical spin component for wall bounce
-                ball.dy += (Math.random() - 0.5) * 0.5; // Small random vertical push
-                normalizeBallSpeed();
-            }
-
-            // Top boundary collision (bounces off top edge of canvas, including goal's top bar)
-            if (ball.dy < 0 && ball.y - ball.radius <= 0) {
-                ball.dy = -ball.dy;
-                ball.y = ball.radius; // Prevent sticking
-                // Add a small horizontal spin component for top wall bounce
-                ball.dx += (Math.random() - 0.5) * 0.5; // Small random horizontal push
-                normalizeBallSpeed(); // Maintain consistent speed
-            }
-
-            // Define a specific "sensitive" zone for speed boost, outside of goal posts and the wider goal area.
-            // This zone will be a small strip on the left and right of the canvas, near the goal line.
-            const sensitiveZoneWidth = 10; // Width of the sensitive zone on each side
-            const sensitiveZoneHeight = 50; // Height of the sensitive zone extending downwards from the goal line
-            const goalSideBoostFactor = 1.5; // Speed increase factor
-
-            // Collision with the sensitive zone on the left side of the canvas
-            if (ball.dy < 0 && // Ball moving upwards (towards the goal area)
-                ball.x - ball.radius <= sensitiveZoneWidth && // Ball hits the left edge of the canvas within the zone
-                ball.x + ball.radius > 0 && // Ensure ball is coming from outside or at the edge
-                ball.y - ball.radius < (goal.y + sensitiveZoneHeight) && // Ball is within the vertical range of the zone
-                ball.y + ball.radius > goal.y) { // Ball is above the goal line
-
-                // Ensure it's not colliding with the goal posts or the wider goal area (goal.x - 40 to goal.x + goal.width + 40)
-                // This condition checks if the ball is *outside* the main goal structure horizontally
-                if (ball.x + ball.radius < goal.x - 55) { // Ball is to the left of the wider goal area
-                    ball.dx = -ball.dx; // Reverse horizontal direction
-                    ball.speed = Math.min(ball.speed * goalSideBoostFactor, maxGameSpeed); // Increase speed
-                    ball.dy += (Math.random() - 0.5) * 0.7; // Add some vertical spin
-                    normalizeBallSpeed();
-                    ball.x = sensitiveZoneWidth + ball.radius + 0.1; // Nudge out
-                }
-            }
-
-            // Collision with the sensitive zone on the right side of the canvas
-            if (ball.dy < 0 && // Ball moving upwards (towards the goal area)
-                ball.x + ball.radius >= canvas.width - sensitiveZoneWidth && // Ball hits the right edge of the canvas within the zone
-                ball.x - ball.radius < canvas.width && // Ensure ball is coming from outside or at the edge
-                ball.y - ball.radius < (goal.y + sensitiveZoneHeight) && // Ball is within the vertical range of the zone
-                ball.y + ball.radius > goal.y) { // Ball is above the goal line
-
-                // Ensure it's not colliding with the goal posts or the wider goal area
-                if (ball.x - ball.radius > goal.x + goal.width + 55) { // Ball is to the right of the wider goal area
-                    ball.dx = -ball.dx; // Reverse horizontal direction
-                    ball.speed = Math.min(ball.speed * goalSideBoostFactor, maxGameSpeed); // Increase speed
-                    ball.dy += (Math.random() - 0.5) * 0.7; // Add some vertical spin
-                    normalizeBallSpeed();
-                    ball.x = canvas.width - sensitiveZoneWidth - ball.radius - 0.1; // Nudge out
-                }
-            }
-
-            // Goal post (side) collisions - speed increase (ORIGINAL LOGIC)
-            // This logic remains for actual goal post collisions (doubles speed)
-            if (ball.y - ball.radius < goal.y + goal.height && ball.y + ball.radius > goal.y) { // Vertically aligned with goal structure
-                // Hit left post (ball moving left, hits goal.x)
-                if (ball.dx < 0 && (ball.x - ball.radius) < goal.x && (ball.x + ball.radius) > goal.x ) {
-                     if(ball.x > goal.x - ball.radius - 5 && ball.x < goal.x + 5){ // Check if it's close to the post
-                        ball.dx = -ball.dx;
-                        ball.x = goal.x + ball.radius + 0.1; // Nudge out
-                        // Ball speed doubles when hitting the goal post, with max speed limit
-                        ball.speed = Math.min(ball.speed * 2, maxGameSpeed);
-                        ball.dy += (Math.random() - 0.5) * 0.7; // Add spin
-                        normalizeBallSpeed();
-                     }
-                }
-                // Hit right post (ball moving right, hits goal.x + goal.width)
-                else if (ball.dx > 0 && (ball.x + ball.radius) > (goal.x + goal.width) && (ball.x - ball.radius) < (goal.x + goal.width) ) {
-                    if(ball.x < goal.x + goal.width + ball.radius + 5 && ball.x > goal.x + goal.width - 5){
-                        ball.dx = -ball.dx;
-                        ball.x = (goal.x + goal.width) - ball.radius - 0.1; // Nudge out
-                        // Ball speed doubles when hitting the goal post, with max speed limit
-                        ball.speed = Math.min(ball.speed * 2, maxGameSpeed);
-                        ball.dy += (Math.random() - 0.5) * 0.7; // Add spin
-                        normalizeBallSpeed();
-                    }
-                }
-            }
-
-            // Paddle collision
-            if (ball.dy > 0 && // Ball moving downwards
-                ball.y + ball.radius >= paddle.y &&
-                ball.y - ball.radius <= paddle.y + paddle.height &&
-                ball.x + ball.radius >= paddle.x &&
-                ball.x - ball.radius <= paddle.x + paddle.width) {
-
-                ball.dy = -ball.dy;
-                ball.y = paddle.y - ball.radius - 0.1; // Prevent sticking slightly above paddle
-
-                // Ball speed is reset to initialBallSpeed when bouncing off the paddle
-                // This is important so that adaptive speed increase is still felt over time
-                ball.speed = initialBallSpeed;
-
-                // Add spin based on where the ball hits the paddle width
-                // Impact position: -1 (left edge) to +1 (right edge)
-                const hitPos = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
-                ball.dx = hitPos * ball.speed * 1.0; // Increase factor for more noticeable spin from paddle (previously 0.7)
-
-                normalizeBallSpeed(); // Apply new speed and dx/dy proportion
-                playKickSound(); // Play kick sound on paddle hit
-            }
-
-            // Bottom collision (computer scores)
-            if (ball.y + ball.radius >= canvas.height) {
-                computerScore++;
-                updateHUD();
-                playSadSound(); // Play sad sound on computer goal
-                resetBall();
-                return;
-            }
-
-            // Obstacle collisions
-            obstacles.forEach(obstacle => {
-                const dx_obs = ball.x - obstacle.x;
-                const dy_obs = ball.y - obstacle.y;
-                const distance = Math.sqrt(dx_obs*dx_obs + dy_obs*dy_obs);
-
-                if (distance < ball.radius + obstacle.radius) {
-                    // Push ball out of obstacle to prevent sticking
-                    const overlap = ball.radius + obstacle.radius - distance;
-                    ball.x += Math.cos(Math.atan2(dy_obs, dx_obs)) * overlap;
-                    ball.y += Math.sin(Math.atan2(dy_obs, dx_obs)) * overlap;
-
-                    if (obstacle.isSpecial) {
-                        // Force ball to move downwards (away from goal)
-                        ball.dy = Math.abs(ball.dy);
-
-                        // Direct dx towards the paddle's center
-                        const paddleCenterX = paddle.x + paddle.width / 2;
-                        const directionToPaddleX = paddleCenterX - ball.x;
-
-                        // Adjust dx to point towards the paddle, while maintaining overall speed
-                        // This is a simplified way to "aim" it, without full vector math for angle
-                        ball.dx = directionToPaddleX * (ball.speed / (Math.abs(directionToPaddleX) + Math.abs(ball.dy)));
-
-                        // If ball.dx becomes NaN due to directionToPaddleX being 0, set it to a small random value
-                        if (isNaN(ball.dx)) {
-                            ball.dx = (Math.random() - 0.5) * 2;
-                        }
-                    } else {
-                        // Original reflection logic for non-special obstacles
-                        const angle = Math.atan2(dy_obs, dx_obs);
-                        ball.dx = Math.cos(angle) * ball.speed;
-                        ball.dy = Math.sin(angle) * ball.speed;
-                        // Add a small spin component for obstacle bounce
-                        ball.dx += (Math.random() - 0.5) * 0.5; // Random horizontal push
-                        ball.dy += (Math.random() - 0.5) * 0.5; // Random vertical push
-                    }
-                    normalizeBallSpeed(); // Re-normalize speed to ensure ball.speed is maintained
-                    playKickSound(); // Play kick sound on obstacle hit
-                }
-            });
-        }
-
-        function updateObstacles() {
-            obstacles.forEach(obstacle => {
-                // Jika rintangan tidak memiliki target atau sangat dekat dengan targetnya, pilih target baru
-                if (obstacle.targetX === null || obstacle.targetY === null ||
-                    Math.sqrt(Math.pow(obstacle.x - obstacle.targetX, 2) + Math.pow(obstacle.y - obstacle.targetY, 2)) < obstacle.speed) {
-
-                    // Pilih target acak dalam jangkauan yang ditentukan dari posisi awal
-                    obstacle.targetX = obstacle.initialX + (Math.random() * 2 - 1) * obstacle.moveRange;
-                    obstacle.targetY = obstacle.initialY + (Math.random() * 2 - 1) * obstacle.moveRange;
-
-                    // Pastikan target tetap dalam batas kanvas
-                    obstacle.targetX = Math.max(obstacle.radius, Math.min(canvas.width - obstacle.radius, obstacle.targetX));
-                    obstacle.targetY = Math.max(obstacle.radius, Math.min(canvas.height - obstacle.radius, obstacle.targetY));
-
-                    // Hitung arah dan komponen kecepatan (dx, dy) menuju target baru
-                    const angle = Math.atan2(obstacle.targetY - obstacle.y, obstacle.targetX - obstacle.x);
-                    obstacle.dx = Math.cos(angle) * obstacle.speed;
-                    obstacle.dy = Math.sin(angle) * obstacle.speed;
-                }
-
-                // Gerakkan rintangan
-                obstacle.x += obstacle.dx;
-                obstacle.y += obstacle.dy;
-
-                // Tangani tabrakan dengan batas kanvas (untuk mencegah rintangan keluar)
-                if (obstacle.x - obstacle.radius < 0) {
-                    obstacle.x = obstacle.radius;
-                    obstacle.dx *= -1;
-                    obstacle.targetX = null; // Paksa pemilihan target baru
-                } else if (obstacle.x + obstacle.radius > canvas.width) {
-                    obstacle.x = canvas.width - obstacle.radius;
-                    obstacle.dx *= -1;
-                    obstacle.targetX = null; // Paksa pemilihan target baru
-                }
-                if (obstacle.y - obstacle.radius < 0) {
-                    obstacle.y = obstacle.radius;
-                    obstacle.dy *= -1;
-                    obstacle.targetY = null; // Paksa pemilihan target baru
-                } else if (obstacle.y + obstacle.radius > canvas.height) {
-                    obstacle.y = canvas.height - obstacle.radius;
-                    obstacle.dy *= -1;
-                    obstacle.targetY = null; // Paksa pemilihan target baru
-                }
-            });
-        }
-
-        function updatePaddle(inputX) { // inputX is the raw clientX or touch.clientX
-            if (inputX === undefined) return;
-
-            const rect = canvas.getBoundingClientRect();
-            // Scale inputX from screen coordinate to canvas logical coordinate
-            const scaleX = canvas.width / rect.width;
-            const canvasMouseX = (inputX - rect.left) * scaleX;
-
-            // Sesuaikan posisi paddle agar tetap di tengah input mouse/touch
-            paddle.x = canvasMouseX - paddle.width / 2;
-
-            if (paddle.x < 0) paddle.x = 0;
-            if (paddle.x + paddle.width > canvas.width) {
-                paddle.x = canvas.width - paddle.width;
-            }
-        }
-
-        function resetBall() {
-            ball.x = canvas.width / 2;
-            ball.y = canvas.height / 2; // Start from the center
-            ball.speed = initialBallSpeed; // Reset to initial speed, difficulty will increase it
-
-            // Ensure ball always goes upwards (towards the goal)
-            ball.dy = -ball.speed; // Always move upwards
-
-            // Randomly choose left or right horizontal direction
-            ball.dx = (Math.random() > 0.5 ? 1 : -1) * (ball.speed * 0.7); // Adjust 0.7 for horizontal spread
-
-            normalizeBallSpeed(); // Ensure consistent speed with new dx/dy
-
-            // Clear the ball trail on reset
-            ballTrail.length = 0;
-        }
-
-        function updateHUD() {
-            document.getElementById('playerScore').textContent = playerScore;
-            document.getElementById('computerScore').textContent = computerScore;
-            document.getElementById('timeDisplay').textContent = gameTime;
-        }
-
-        function gameLoop() {
-            if (!gameRunning) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
-
-            drawField();
-            drawGoal();
-            drawPaddle();
-            drawObstacles(); // Draw obstacles before ball
-            drawBall(); // Draw ball last so it's on top
-
-            updateBall();
-            updateObstacles();
-
-            requestAnimationFrame(gameLoop);
-        }
-
-        function endGame() {
-            gameRunning = false;
-            clearInterval(gameTimer); // Stop the timer
-
-            const gameResult = {
-                date: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
-                playerScore: playerScore,
-                computerScore: computerScore,
-                result: playerScore > computerScore ? 'Win' : (computerScore > playerScore ? 'Lose' : 'Draw')
-            };
-
-            gameHistory.unshift(gameResult); // Add to beginning
-            if (gameHistory.length > 10) gameHistory = gameHistory.slice(0, 10); // Keep last 10
-
-            try {
-                if (window.localStorage) {
-                    window.localStorage.setItem('soccerBounceHistory', JSON.stringify(gameHistory));
-                }
-            } catch (e) {
-                console.warn('Cannot save to localStorage.');
-            }
-
-            const finalResultDiv = document.getElementById('finalResult');
-            let resultHTML = '';
-            if (playerScore > computerScore) {
-                resultHTML = `<h2>🎉 CONGRAT! 🎉</h2><div class="vs-text">YOU WIN!</div>`;
-            } else if (computerScore > playerScore) {
-                resultHTML = `<h2>😞 TOO BAD! 😞</h2><div class="vs-text">YOU LOSE!</div>`;
+        function loginAndPlay() {
+            const playerName = document.getElementById('playerNameInput').value.trim();
+            if (playerName) {
+                localStorage.setItem('currentPlayerName', playerName);
+                window.location.href = 'CobaGemini001_015.html'; // Arahkan ke halaman game
             } else {
-                resultHTML = `<h2>🤝 RESULTS! 🤝</h2><div class="vs-text">DRAW MATCH!</div>`;
-            }
-            resultHTML += `<div class="score-display">${playerScore} - ${computerScore}</div>`;
-            finalResultDiv.innerHTML = resultHTML;
-
-            showModal('gameOver');
-        }
-
-        function restartGame() {
-            startGame(); // This already hides modals and resets game state
-        }
-
-        function exitGame() {
-            gameRunning = false;
-            gameStarted = false; // Reset this so leaderboard knows where to return
-            clearInterval(gameTimer);
-            showModal('startMenu');
-        }
-
-        function showLeaderboard() {
-            const leaderboardContent = document.getElementById('leaderboardContent');
-            if (gameHistory.length === 0) {
-                leaderboardContent.innerHTML = '<p style="text-align: center;">Belum ada data permainan</p>';
-            } else {
-                let html = '<div style="text-align: left;">';
-                gameHistory.forEach((game) => {
-                    const resultColor = game.result === 'Win' ? '#4CAF50' :
-                                       (game.result === 'Lose' ? '#FF6B6B' : '#FFA726');
-                    html += `
-                        <div style="margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid ${resultColor};">
-                            <strong>${game.date}</strong><br>
-                            Skor: ${game.playerScore} (Anda) - ${game.computerScore} (CPU)<br>
-                            <span style="color: ${resultColor}; font-weight: bold;">Result: ${game.result}</span>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-                leaderboardContent.innerHTML = html;
-            }
-
-            // Determine which modal was active to hide it before showing leaderboard
-            if (document.getElementById('startMenu').style.display === 'flex') {
-                document.getElementById('startMenu').style.display = 'none';
-            } else if (document.getElementById('gameOver').style.display === 'flex') {
-                document.getElementById('gameOver').style.display = 'none';
-            }
-            showModal('leaderboard');
-        }
-
-        function hideLeaderboard() {
-            document.getElementById('leaderboard').style.display = 'none';
-            // Return to the appropriate menu
-            if (!gameStarted || document.getElementById('startMenu').dataset.cameFrom === 'true' || playerScore === 0 && computerScore === 0 && gameTime === 90) { // A bit of a heuristic
-                 showModal('startMenu');
-            } else {
-                 showModal('gameOver');
+                alert('Please enter your player name!');
             }
         }
 
-        // Event listeners for mouse
-        canvas.addEventListener('mousemove', (e) => {
-            if (!gameRunning) return;
-            updatePaddle(e.clientX);
-        });
-        // Event listeners for touch
-        canvas.addEventListener('touchstart', (e) => {
-            if (!gameRunning) return;
-            e.preventDefault(); // Prevent scrolling/other default touch actions
-            if (e.touches.length > 0) {
-                updatePaddle(e.touches[0].clientX);
-            }
-        }, { passive: false });
-
-        canvas.addEventListener('touchmove', (e) => {
-            if (!gameRunning) return;
-            e.preventDefault(); // Prevent scrolling/other default touch actions
-            if (e.touches.length > 0) {
-                updatePaddle(e.touches[0].clientX);
-            }
-        }, { passive: false });
-
+        function viewGlobalLeaderboard() {
+            window.location.href = 'Klasemen.html'; // Arahkan ke halaman klasemen
+        }
     </script>
 </body>
 </html>
